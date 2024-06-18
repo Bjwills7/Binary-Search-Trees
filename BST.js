@@ -14,19 +14,56 @@ class Tree {
     }
 }
 
+function insert(value, root) {
+    
+    root = recurse(value, root);
+
+    function recurse(value, node) {
+        
+        if (node === null) {
+
+            return new Node(value);
+
+        } else if (value < node.value) {
+
+            node.left = recurse(value, node.left);
+
+        } else if (value > node.value) {
+
+            node.right = recurse(value, node.right);
+
+        }
+
+        return node;
+    }
+}
+
 function buildTree(arr) {
     const tree = new Tree();
     const sortedArr = mergeSort(arr);
-    const midPoint = Math.floor(arr.length / 2);
-    var currentNode;
+    const midPoint = Math.floor(sortedArr.length / 2);
 
-    tree.root = arr[midPoint];
+    tree.root = new Node(sortedArr[midPoint]);
+    tree.root.left = recurse(sortedArr.slice(0, midPoint));
+    tree.root.right = recurse(sortedArr.slice(midPoint + 1));
 
-    for (let i = midPoint; i < arr.length; i++) {
-         
+    function recurse(arr) {
+        if (arr.length === 0) {
+
+            return null;
+
+        } else {
+            var newMid = Math.floor(arr.length / 2);
+            var newNode = new Node(arr[newMid]);
+  
+            newNode.left = recurse(arr.slice(0, newMid));
+            newNode.right = recurse(arr.slice(newMid + 1));
+
+            return newNode;
+        }
     }
 
-    console.log(arr);
+    return tree.root;
 }
 
 function mergeSort(arr) { // Removes duplicate values
@@ -79,20 +116,32 @@ function mergeSort(arr) { // Removes duplicate values
             mergedArr.pop();
 
         }
-        
-        return mergedArr.concat(sortedLeft, sortedRight); // Concat remaining value
+
+        return mergedArr.concat(sortedLeft, sortedRight); // Concat remaining values
 
     }
 }
 
-function removeDuplicates(arr) {
-    arr.forEach(element, index => {
-        if (element === arr[index + 1]) {
-            delete element;
-        }
-    });
-}
+const prettyPrint = (node, prefix = "", isLeft = true) => {
+    if (node === null) {
+      return;
+    }
+    if (node.right !== null) {
+      prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
+    }
+    console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.value}`);
+    if (node.left !== null) {
+      prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
+    }
+  };
 
 const myArr = [1, 7, 3, 4, 12, 2, 18, 3, 24, 12, 37, 42];
+var mid = Math.floor(myArr.length / 2);
 const lilArr = [2, 1];
+var myTree = buildTree(myArr);
 console.log(mergeSort(myArr));
+prettyPrint(myTree);
+insert(45, myTree);
+insert(41, myTree);
+console.log("myTree", myTree);
+prettyPrint(myTree);
